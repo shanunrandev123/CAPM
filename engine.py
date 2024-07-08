@@ -45,21 +45,40 @@ log_returns = np.log(stocks/stocks.shift(1))
 
 print(log_returns.head())
 
-weights = np.random.random(4)
 
-# rebalance the weights
-weights /= np.sum(weights)
+np.random.seed(42)
+
+num_ports = 100
+all_weights = np.zeros((num_ports, len(stocks.columns)))
+ret_arr = np.zeros(num_ports)
+vol_arr = np.zeros(num_ports)
+
+sharpe_arr = np.zeros(num_ports)
 
 
-# expected portfolio returns
+for ind in range(num_ports):
+    weights = np.array(np.random.random(4))
 
-exp_ret = np.sum((log_returns.mean() * weights) * 252)
+    # rebalance the weights
+    weights /= np.sum(weights)
+    
+    all_weights[ind, :] = weights
 
-exp_vola = np.sqrt(np.dot(weights.T, np.dot(log_returns.cov()*252, weights)))
+
+    # expected portfolio returns
+
+    ret_arr[ind] = np.sum((log_returns.mean() * weights) * 252)
+
+    vol_arr[ind] = np.sqrt(np.dot(weights.T, np.dot(log_returns.cov()*252, weights)))
+    
+    sharpe_arr[ind] = ret_arr[ind]/vol_arr[ind]
 
 # sharpe ratio
 
-sharpe = exp_ret/exp_vola
+# sharpe = exp_ret/exp_vola
 
-print(sharpe)
+print(sharpe_arr)
+
+print('max sharpe ratio')
+print(sharpe_arr.max())
 
